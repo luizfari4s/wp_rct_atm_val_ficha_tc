@@ -108,14 +108,14 @@ def arquivos_de_saida(df_rct_batch_vivos_pend_importacao,df_ficha,df_periodo,pst
     ).rename(columns={'PanelSmart#1':'iddomicilio'})
 
     ordem = [
-        'SUBIR GPM',
-        'SUBIR GPM - AJUSTAR ORIGEM',
-        'SUBIR GPM - CRITERIO DE QUALIDADE (<25 ATOS)',
-        'OFF - REGIÃO FORA DA COLETA',
-        'GPM - FICHA IMPORTADA',
-        'OFF - DUPLICIDADES',
         'OFF - TESTE',
-        'OFF - MORTALIDADE'
+        'OFF - MORTALIDADE',
+        'SUBIR GPM',
+        'OFF - ABAIXO DE 5 ATOS',
+        'SUBIR GPM - AJUSTAR ORIGEM',
+        'OFF - REGIÃO FORA DA COLETA',
+        'SUBIR GPM - ACIMA DE 5 ATOS)',
+        'GPM - FICHA IMPORTADA'
     ]
 
     overview['Decisao_Final'] = Categorical(

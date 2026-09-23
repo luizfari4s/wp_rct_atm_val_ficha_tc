@@ -111,14 +111,16 @@ def analise_segmentacao_origens(df_ids_recrutados_origen_validacao):
     cond_qualidade = (
         (df_ids_recrutados_origen_validacao['saida_decisao'] == 'AGUARDAR') &
         (df_ids_recrutados_origen_validacao['Validacao_Origem'].isin(['ORIGEM_CORRETA','ORIGEM_INCORRETA'])) & 
-        (df_ids_recrutados_origen_validacao['flag_complementar'].isin(['NAO_CUMPRE_CRITERIO_QUALIDADE'])) &
+        (df_ids_recrutados_origen_validacao['NumCompras'] >= 5) &
         (df_ids_recrutados_origen_validacao['Data_Entrada'].isna())
         
     )
 
+
     cond_gom = (
         ~df_ids_recrutados_origen_validacao['Data_Entrada'].isna()
     )
+
     logger.write( etapa='processamento', mensagem=f'ref regra hard code linha 122 origen_analisys (revisar)')
     cond_teste =(
         df_ids_recrutados_origen_validacao['P10d_t'].isin(['teste@gmail.com',
@@ -129,12 +131,19 @@ def analise_segmentacao_origens(df_ids_recrutados_origen_validacao):
     cond_mortalidade =(
         df_ids_recrutados_origen_validacao['FSPanel1'].notna()
     )
+
+    cond_abaixo_5_atos = (
+    (df_ids_recrutados_origen_validacao['saida_decisao'] == 'AGUARDAR') &
+    (df_ids_recrutados_origen_validacao['NumCompras'] < 5) &
+    (df_ids_recrutados_origen_validacao['Data_Entrada'].isna())
+    )
     logger.write( etapa='processamento', mensagem=f'ref segmentação de bases para importação mediante regras')
     df_ids_recrutados_origen_validacao['Decisao_Final'] = np.select(
         [
             cond_teste,
             cond_mortalidade,
             cond_aprovado,
+            cond_abaixo_5_atos,
             cond_ajustar_origem,
             cond_setor,
             cond_qualidade,
@@ -145,9 +154,10 @@ def analise_segmentacao_origens(df_ids_recrutados_origen_validacao):
             'OFF - TESTE',
             'OFF - MORTALIDADE',
             'SUBIR GPM',
+            'OFF - ABAIXO DE 5 ATOS',
             'SUBIR GPM - AJUSTAR ORIGEM',
             'OFF - REGIÃO FORA DA COLETA',
-            'SUBIR GPM - CRITERIO DE QUALIDADE (<25 ATOS)',
+            'SUBIR GPM - ACIMA DE 5 ATOS)',
             'GPM - FICHA IMPORTADA'
             
         ],
